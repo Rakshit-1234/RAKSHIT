@@ -1,0 +1,104 @@
+<html>
+<head>
+	<title>Cross-Site Scripting (XSS)</title>
+	<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'"> -->
+	<style>
+		body {
+			padding: 50px;
+		}
+
+		.title {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 32px;
+			letter-spacing: 4px;
+			padding: 25px;
+			border-bottom: 5px solid black;
+		}
+
+		.inputForm {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-top: 40px;
+		}
+
+		.inputForm > form > #text {
+			border: none;
+			border-bottom: 2px solid black;
+		}
+		.inputForm > form > #text:focus {
+			outline: none;
+		}
+
+	</style>
+</head>
+<body>
+
+	<div class="title">Search</div>
+	<div class="inputForm">
+		<form action="" method="GET">
+			<input id="text" type="text" name="q" placeholder="Enter task">
+			<input type="submit" value="Search">
+		</form>
+	</div>
+	<div id="results"></div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var q = getQueryParameter('q');
+
+			if (q) {
+					// showQueryAndResults(q, results);
+					addTask(q);
+					
+			}
+		});
+		
+		function showQueryAndResults(q, results) {
+
+			var resultsEl = document.querySelector('#results');
+			var html = '';
+
+			html += '<p>Your search query:</p>';
+			html += '<pre>' + q + '</pre>';
+			html += '<ul>';
+
+			for (var index = 0; index < results.length; index++) {
+				html += '<li>' + results[index] + '</li>';
+			}
+
+			html += '</ul>';
+
+			resultsEl.innerHTML = html;
+		}
+
+		// Use this instead----------------------------------------
+		function addTask(name) {
+			const tag = document.createElement("p")
+			var text = document.createTextNode(name)
+			tag.appendChild(text)
+			document.querySelector("#results").appendChild(tag)
+		}
+		// ---------------------------------------------------------
+
+		function getQueryParameter(name) {
+
+			var pairs = window.location.search.substring(1).split('&');
+			var pair;
+
+			for (var index = 0; index < pairs.length; index++) {
+
+				pair = pairs[index].split('=');
+
+				if (decodeURIComponent(pair[0]) === name) {
+					return decodeURIComponent(pair[1]);
+				}
+			}
+
+			return false;
+		}
+	</script>
+</body>
+</html>
